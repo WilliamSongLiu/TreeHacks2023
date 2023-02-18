@@ -155,6 +155,7 @@ contract Cars is ERC721A, Ownable {
                             'if(currentTrackSegmentId >= trackOrder.length) {'
                                 'currentTrackSegmentId = 0;'
                             '}'
+                            'console.log("track " + currentTrackSegmentId)'
                         '}'
                     '}'
 
@@ -180,9 +181,9 @@ contract Cars is ERC721A, Ownable {
                     '}'
 
                     'function getCarPosition() {'
-                        'let [prevGridRow, prevGridCol] = getGridIdToRowCol((currentTrackSegmentId + trackOrder.length - 1) % trackOrder.length);'
-                        'let [gridRow, gridCol] = getGridIdToRowCol(currentTrackSegmentId);'
-                        'let [nextGridRow, nextGridCol] = getGridIdToRowCol((currentTrackSegmentId + 1) % trackOrder.length);'
+                        'let [prevGridRow, prevGridCol] = getGridIdToRowCol(trackOrder[(currentTrackSegmentId + trackOrder.length - 1) % trackOrder.length]);'
+                        'let [gridRow, gridCol] = getGridIdToRowCol(trackOrder[currentTrackSegmentId]);'
+                        'let [nextGridRow, nextGridCol] = getGridIdToRowCol(trackOrder[(currentTrackSegmentId + 1) % trackOrder.length]);'
 
                         'let gridLeastX = gridCol * gridCellSizeX;'
                         'let gridLeastY = gridRow * gridCellSizeY;'
