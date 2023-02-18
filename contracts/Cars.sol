@@ -95,7 +95,11 @@ contract Cars is ERC721A, Ownable {
                     'let fps = 60;'
                     'let time = 0;'
 
-                    'let x = 0;'
+                    'let gridSizeX = 3, gridSizeY = 3;'
+                    'let gridCellSizeX, gridCellSizeY;'
+                    'let track = [[2, 1, 3], [0, 6, 0], [5, 1, 4]];'
+
+                    'let currentGridCellX = 0, currentGridCellY = 0;'
 
                     'function startGame() {'
                         'context = canvas.getContext("2d");'
@@ -104,13 +108,16 @@ contract Cars is ERC721A, Ownable {
                         'canvas.width  = window.innerWidth;'
                         'canvas.height = window.innerHeight;'
 
-                        'time = 0;'
+                        'gridCellSizeX = canvas.width / gridSizeX;'
+                        'gridCellSizeY = canvas.height / gridSizeY;'
+
                         'runFrame();'
                     '}'
 
                     'function runFrame() {'
-                        'time += 1 / fps;'
                         'draw();'
+
+                        'time += 1 / fps;'
 
                         'setTimeout(function() {'
                             'requestAnimationFrame(runFrame);'
@@ -120,25 +127,34 @@ contract Cars is ERC721A, Ownable {
                     'function draw() {'
                         'context.clearRect(0, 0, canvas.width, canvas.height);'
 
-                        'context.fillStyle = "blue";'
+                        'context.fillStyle = "black";'
                         'context.fillRect(0, 0, canvas.width, canvas.height);'
 
-                        'context.beginPath();'
-                        'context.arc(x, 100, 20, 0, 2 * Math.PI);'
-                        'context.closePath();'
-                        'context.fillStyle = "rgb(255, 0, 0)";'
-                        'context.fill();'
+                        'drawTrack();'
+                        'drawCar();'
+                        'drawTimer();'
+                    '}'
 
+                    'function drawTrack() {'
+                        'for(let y = 0; y < gridSizeY; y++) {'
+                            'for(let x = 0; x < gridSizeX; x++) {'
+                                'const gridCell = track[y][x];'
+                                'context.fillStyle = "rgb(" + gridCell * 40 + ", 100, 100)";'
+                                'context.fillRect(x * gridCellSizeX, y * gridCellSizeY, gridCellSizeX, gridCellSizeY);'
+                            '}'
+                        '}'
+                    '}'
+
+                    'function drawCar() {'
+
+                    '}'
+
+                    'function drawTimer() {'
                         'context.font = "48px serif";'
                         'context.textBaseline = "hanging";'
                         'context.fillStyle = "rgb(255,255,0)";'
                         'context.strokeStyle = "rgb(255,255,0)";'
                         'context.fillText("Timer: " + time.toFixed(2) + "s", 10, 50);'
-
-                        'x += 100 / fps;'
-                        'if(x > canvas.width) {'
-                            'x = 0;'
-                        '}'
                     '}'
                 '</script>'
             '</body>'
