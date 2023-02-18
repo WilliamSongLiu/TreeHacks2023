@@ -93,6 +93,7 @@ contract Cars is ERC721A, Ownable {
                     'let context;'
 
                     'let fps = 60;'
+                    'let time = 0;'
 
                     'let x = 0;'
 
@@ -103,10 +104,12 @@ contract Cars is ERC721A, Ownable {
                         'canvas.width  = window.innerWidth;'
                         'canvas.height = window.innerHeight;'
 
+                        'time = 0;'
                         'runFrame();'
                     '}'
 
                     'function runFrame() {'
+                        'time += 1 / fps;'
                         'draw();'
 
                         'setTimeout(function() {'
@@ -125,6 +128,12 @@ contract Cars is ERC721A, Ownable {
                         'context.closePath();'
                         'context.fillStyle = "rgb(255, 0, 0)";'
                         'context.fill();'
+
+                        'context.font = "48px serif";'
+                        'context.textBaseline = "hanging";'
+                        'context.fillStyle = "rgb(255,255,0)";'
+                        'context.strokeStyle = "rgb(255,255,0)";'
+                        'context.fillText("Timer: " + time.toFixed(2) + "s", 10, 50);'
 
                         'x += 100 / fps;'
                         'if(x > canvas.width) {'
