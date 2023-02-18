@@ -38,7 +38,7 @@ contract Cars is ERC721A, Ownable {
             revert URIQueryForNonexistentToken();
         }
 
-        string memory name = string(abi.encodePacked("Animation #", utils.uint2str(tokenId)));
+        string memory name = string(abi.encodePacked("Car #", utils.uint2str(tokenId)));
         string memory image = makeImage(tokenId);
         string memory animation = makeAnimation(tokenId);
 
@@ -46,7 +46,7 @@ contract Cars is ERC721A, Ownable {
             abi.encodePacked(
                 '{'
                     '"name": "', name, '",'
-                    '"description": "Animation",'
+                    '"description": "Car",'
                     '"attributes": [],'
                     '"image": "data:image/svg+xml;base64,', Base64.encode(bytes(image)), '",'
                     '"animation_url": "data:text/html;base64,', Base64.encode(bytes(animation)), '"'
@@ -97,13 +97,22 @@ contract Cars is ERC721A, Ownable {
 
                     'let gridNumRows = 3, gridNumCols = 3;'
                     'let gridCellSizeX, gridCellSizeY;'
-                    'let track = [[2, 1, 3], [0, 6, 0], [5, 1, 4]];'
 
                     'let trackOrder = [0, 1, 2, 5, 8, 7, 6, 3];'
+                    'let trackCurves = [[2, 1, 2], [1, 0, 1], [2, 1, 2]];'
+
                     'let currentTrackSegmentId = 0;'
                     'let currentTrackSegmentProgress = 0.5;'
 
-                    'let speed = 1;'
+                    'let currentTrackSegmentLength;'
+                    'let distanceToNextCurve;'
+
+                    'let straightTopSpeed = 2;'
+                    'let curveTopSpeed = 1;'
+                    'let acceleration = 1;'
+                    'let braking = 1;'
+
+                    'let speed = 0;'
 
                     'function getGridIdToRowCol(gridId) {'
                         'return [Math.floor(gridId / gridNumCols), gridId % gridNumCols];'
@@ -111,10 +120,6 @@ contract Cars is ERC721A, Ownable {
 
                     'function getGridRowColToId(gridRow, gridCol) {'
                         'return gridCol + gridRow * gridNumCols;'
-                    '}'
-
-                    'function lerp(min, max, s) {'
-                        'return min + (max - min) * s;'
                     '}'
 
                     'function startGame() {'
@@ -133,11 +138,13 @@ contract Cars is ERC721A, Ownable {
                             'console.log(i + " " + a + " " + b);'
                         '}'
 
+                        'getTrackSegmentInfo();'
+
                         'runFrame();'
                     '}'
 
                     'function runFrame() {'
-                        'moveCar();'
+                        'runPhysics();'
                         'draw();'
 
                         'time += 1 / fps;'
@@ -147,15 +154,59 @@ contract Cars is ERC721A, Ownable {
                         '}, 1000 / fps);'
                     '}'
 
-                    'function moveCar() {'
-                        'currentTrackSegmentProgress += speed / 100;'
+                    'function getTrackIsCurve(trackSegmentId) {'
+                        'let [prevGridRow, prevGridCol] = getGridIdToRowCol(trackOrder[(trackSegmentId + trackOrder.length - 1) % trackOrder.length]);'
+                        'let [gridRow, gridCol] = getGridIdToRowCol(trackOrder[trackSegmentId]);'
+                        'let [nextGridRow, nextGridCol] = getGridIdToRowCol(trackOrder[(trackSegmentId + 1) % trackOrder.length]);'
+
+                        'if((gridCol != prevGridCol && gridCol != nextGridCol) || (gridRow != prevGridRow && gridRow != nextGridRow)) {'
+                            'return false;'
+                        '}'
+                        'return true;'
+                    '}'
+
+                    'function getTrackSegmentInfo() {'
+                        'if(getTrackIsCurve(currentTrackSegmentId)) {'
+                            'currentTrackSegmentLength = 100;'
+                        '}'
+                        'else {'
+                            'currentTrackSegmentLength = 2 * Math.PI * 50;'
+                        '}'
+
+                        'let trackSegmentId = currentTrackSegmentId;'
+                        'for(let i = 0; i < trackOrder.length; i++) {'
+                            'if(getTrackIsCurve(trackSegmentId)) {'
+                                'distanceToNextCurve = i * 100;'
+                                'break;'
+                            '}'
+                            'trackSegmentId = (trackSegmentId + 1) % trackOrder.length;'
+                        '}'
+                    '}'
+
+                    'function runPhysics() {'
+                        'let brake = false;'
+                        'if(speed < curveTopSpeed) brake = false;'
+                        'else if((curveTopSpeed - speed) / braking < 0) brake = false;'
+                        'else if(curveTopSpeed <= Math.sqrt(Math.pow(speed, 2) + 2 * braking * distanceToNextCurve)) brake = true;'
+                        'else brake = false;'
+
+                        'if(brake) {'
+                            'speed -= braking / fps;'
+                        '}'
+                        'else if((distanceToNextCurve == 0 && speed < curveTopSpeed) || (distanceToNextCurve > 0 && speed < straightTopSpeed)) {'
+                            'speed += acceleration / fps;'
+                        '}'
+
+                        'currentTrackSegmentProgress += speed / currentTrackSegmentLength;'
+
                         'if(currentTrackSegmentProgress >= 1) {'
                             'currentTrackSegmentProgress = 0;'
                             'currentTrackSegmentId++;'
                             'if(currentTrackSegmentId >= trackOrder.length) {'
                                 'currentTrackSegmentId = 0;'
                             '}'
-                            'console.log("track " + currentTrackSegmentId)'
+
+                            'getTrackSegmentInfo();'
                         '}'
                     '}'
 
@@ -173,11 +224,15 @@ contract Cars is ERC721A, Ownable {
                     'function drawTrack() {'
                         'for(let row = 0; row < gridNumRows; row++) {'
                             'for(let col = 0; col < gridNumCols; col++) {'
-                                'const gridCell = track[row][col];'
+                                'const gridCell = trackCurves[row][col];'
                                 'context.fillStyle = "rgb(" + gridCell * 40 + ", 100, 100)";'
                                 'context.fillRect(col * gridCellSizeX, row * gridCellSizeY, gridCellSizeX, gridCellSizeY);'
                             '}'
                         '}'
+                    '}'
+
+                    'function lerp(min, max, s) {'
+                        'return min + (max - min) * s;'
                     '}'
 
                     'function getCarPosition() {'
@@ -234,10 +289,17 @@ contract Cars is ERC721A, Ownable {
                             'segmentEndY = gridCenterY;'
                         '}'
 
-                        'let x = lerp(segmentStartX, segmentEndX, currentTrackSegmentProgress);'
-                        'let y = lerp(segmentStartY, segmentEndY, currentTrackSegmentProgress);'
-
-                        'return [x, y];'
+                        'if(segmentStartX != segmentEndX && segmentStartY != segmentEndY) {'
+                            'let theta = currentTrackSegmentProgress * Math.PI / 2;'
+                            'let x = lerp(segmentStartX, segmentEndX, currentTrackSegmentProgress);'
+                            'let y = lerp(segmentStartY, segmentEndY, currentTrackSegmentProgress);'
+                            'return [x, y];'
+                        '}'
+                        'else {'
+                            'let x = lerp(segmentStartX, segmentEndX, currentTrackSegmentProgress);'
+                            'let y = lerp(segmentStartY, segmentEndY, currentTrackSegmentProgress);'
+                            'return [x, y];'
+                        '}'
                     '}'
 
                     'function drawCar() {'
