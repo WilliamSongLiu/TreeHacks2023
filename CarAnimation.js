@@ -1,6 +1,12 @@
 let canvas = document.createElement("canvas");
 let context;
 
+let svgDataType = "data:image/svg+xml;base64,";
+let straightTrackImg = new Image();
+straightTrackImg.src = svgDataType + "PHN2ZyBpZD0idXVpZC02YTYwMDgyNi1kNmRhLTQ0MDUtYTU4MS0zYThhOTJkODUxYjMiIGRhdGEtbmFtZT0iTGF5ZXIgMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB3aWR0aD0iNTAwIiBoZWlnaHQ9IjUwMCIgdmlld0JveD0iMCAwIDUwMCA1MDAiPjxkZWZzPjxzdHlsZT4udXVpZC00MTIxYTMzMS1hNTZkLTQzMGQtYTEwYi1jOGUwYjVjNDcxY2V7ZmlsbDojZmZmfTwvc3R5bGU+PC9kZWZzPjxwYXRoIHN0eWxlPSJmaWxsOiMzOWI1NGEiIGQ9Ik0wIDBoNDk5Ljh2NTAwSDB6Ii8+PHBhdGggc3R5bGU9ImZpbGw6IzgwODI4NSIgZD0iTTAgOTloNTAwdjI5NEgweiIvPjxwYXRoIGNsYXNzPSJ1dWlkLTQxMjFhMzMxLWE1NmQtNDMwZC1hMTBiLWM4ZTBiNWM0NzFjZSIgZD0iTTAgNDAxaDUwMHYyNUgweiIvPjxwYXRoIGQ9Ik01MCA0MDFoNTB2MjVINTB6bTEwMCAwaDUwdjI1aC01MHptMTAwIDBoNTB2MjVoLTUwem0xMDAgMGg1MHYyNWgtNTB6bTEwMCAwaDUwdjI1aC01MHoiIHN0eWxlPSJmaWxsOiNlZDFjMjQiLz48cGF0aCBjbGFzcz0idXVpZC00MTIxYTMzMS1hNTZkLTQzMGQtYTEwYi1jOGUwYjVjNDcxY2UiIGQ9Ik0wIDkxaDUwMHY4SDB6bTAgMzAyaDUwMHY4SDB6Ii8+PC9zdmc+";
+let curvedTrackImg = new Image();
+curvedTrackImg.src = svgDataType + "PHN2ZyBpZD0idXVpZC0yNDYwNTk1YS1jOThhLTRhMWItYjUyNS01Yzg5ZmU4MmE5OTAiIGRhdGEtbmFtZT0iTGF5ZXIgMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB3aWR0aD0iNTAwIiBoZWlnaHQ9IjUwMCIgdmlld0JveD0iMCAwIDUwMCA1MDAiPjxkZWZzPjxzdHlsZT4udXVpZC1iMDQyZGQyOC0yOTkwLTQwNmQtOGFjMS00ODA0ZWQyNGI1MzR7ZmlsbDpub25lfS51dWlkLWQ1ZjRiYzkxLWM4Y2YtNDcyZi1iZDcyLTY3NWI4OTRjMTVlM3tmaWxsOiNmZmZ9PC9zdHlsZT48L2RlZnM+PHBhdGggc3R5bGU9ImZpbGw6IzM5YjU0YSIgZD0iTTAtLjFoNTAwdjUwMEgweiIvPjxwYXRoIGQ9Ik05OS45IDQ5OS45aDMwMGMwLTIyMC45LTE3OS4xLTQwMC0zOTkuOS00MDB2MzAwYzU1LjIgMCAxMDAgNDQuOCAxMDAgMTAwWiIgc3R5bGU9ImZpbGw6IzgwODI4NSIvPjxwYXRoIGNsYXNzPSJ1dWlkLWIwNDJkZDI4LTI5OTAtNDA2ZC04YWMxLTQ4MDRlZDI0YjUzNCIgZD0iTTAgMjExLjF2MTg4LjhjNTUuMiAwIDEwMCA0NC44IDEwMCAxMDBoMzUuM1YyMTEuMUgwWiIvPjxwYXRoIGNsYXNzPSJ1dWlkLWIwNDJkZDI4LTI5OTAtNDA2ZC04YWMxLTQ4MDRlZDI0YjUzNCIgZD0iTTAgNDA5Ljl2OTBoOTBjMC00OS43LTQwLjMtOTAtOTAtOTBaIi8+PHBhdGggY2xhc3M9InV1aWQtZDVmNGJjOTEtYzhjZi00NzJmLWJkNzItNjc1Yjg5NGMxNWUzIiBkPSJNMCAzOTkuOXYxMGM0OS43IDAgOTAgNDAuMyA5MCA5MGgxMGMwLTU1LjItNDQuOC0xMDAtMTAwLTEwMFptMC0zMTB2MTBjMjIwLjkgMCA0MDAgMTc5LjEgNDAwIDQwMGgxMGMwLTIyNi40LTE4My41LTQxMC00MTAtNDEwWiIvPjxwYXRoIGNsYXNzPSJ1dWlkLWQ1ZjRiYzkxLWM4Y2YtNDcyZi1iZDcyLTY3NWI4OTRjMTVlMyIgZD0iTTAgNjQuOXYyNWMyMjYuNCAwIDQxMCAxODMuNiA0MTAgNDEwaDIyLjlDNDMyLjkgMjYwLjQgMjM5LjMgNjYgMCA2NC45WiIvPjxwYXRoIGQ9Ik0xMzQuNCA4Ni43Yy0yMC45LTYuOS00Mi41LTEyLjMtNjQuNy0xNi0uMyAzLS42IDYtLjkgOC45LS44IDUuMi0xLjcgMTAuMy0yLjUgMTUuNSAyMC44IDMuNCA0MSA4LjMgNjAuNyAxNC43bDcuNS0yMy4yWm02NC4xIDI3LjFjLTEgMi40LTIuMSA0LjctMy4xIDcuMS0yLjUgNC44LTUgOS43LTcuNSAxNC41IDE4LjYgOS42IDM2LjMgMjAuNSA1My4xIDMyLjdsMTQtMTkuMmMtMTcuOC0xMy4xLTM2LjctMjQuOC01Ni40LTM1LjFabTE1Mi4zIDEzMS43Yy0xMy4xLTE4LjItMjcuNi0zNS4zLTQzLjMtNTEuMi0xLjcgMS45LTMuNSAzLjktNS4yIDUuOGwtMTEuMiAxMS4xYzE0LjggMTQuOSAyOC40IDMxIDQwLjggNDhsMTguOS0xMy43Wk00MTEuOSAzNjZjLTYuOC0yMS4xLTE1LjItNDEuNi0yNS4xLTYxLjJsLTUuNyAzLjNjLTQuOSAyLjUtOS45IDUtMTQuOCA3LjUgOS4zIDE4LjQgMTcuMiAzNy42IDIzLjcgNTcuNWwyMS45LTcuMVptOS41IDY5Yy01LjMuOC0xMC43IDEuNi0xNiAyLjUgMy4xIDIwLjQgNC43IDQxLjIgNC43IDYyLjRINDMzYzAtMjIuNS0xLjctNDQuNy01LTY2LjMtMi4yLjUtNC40LjktNi42IDEuNFoiIHN0eWxlPSJmaWxsOiNlZDFjMjQiLz48L3N2Zz4=";
+
 let fps = 60;
 let time = 0;
 
@@ -127,19 +133,17 @@ function getTrackIsCurve(trackSegmentId) {
     return true;
 }
 
-function getTrackDirectionId(trackSegmentId) {
+function getTrackDirection(trackSegmentId) {
     let [prevGridRow, prevGridCol] = getGridIdToRowCol(trackOrder[(trackSegmentId + trackOrder.length - 1) % trackOrder.length]);
     let [gridRow, gridCol] = getGridIdToRowCol(trackOrder[trackSegmentId]);
     let [nextGridRow, nextGridCol] = getGridIdToRowCol(trackOrder[(trackSegmentId + 1) % trackOrder.length]);
 
     if(!getTrackIsCurve(trackSegmentId)) { // Straight
         if(gridRow == nextGridRow) { // Horizontal
-            if(nextGridCol > gridCol) return 1; // Horizontal right
-            else return 2; // Horizontal left
+            return "h";
         }
         else { // Vertical
-            if(nextGridRow > gridRow) return 3; // Vertical down
-            else return 4; // Vertical up
+            return "v";
         }
     }
     else {
@@ -213,47 +217,24 @@ function drawTrack() {
     }
 }
 
-let grassGreen = "#39b54a";
-let lineWhite = "#fff";
-let lineRed = "#ed1c24";
-let tarmacGrey = "#808285";
 function drawTrackTile(row, col) {
     let startX = col * gridCellSizeX;
     let startY = row * gridCellSizeY;
-    let scaleFactor = gridCellSizeX / 500;
-
-    context.fillStyle = grassGreen;
-    context.fillRect(startX, startY, gridCellSizeX, gridCellSizeY);
 
     let trackSegmentId = getGridRowColToId(row, col);
     if(!trackOrder.includes(trackSegmentId)) {
         return;
     }
 
-    let trackDirectionId = getTrackDirectionId(trackSegmentId);
-    if(trackDirectionId == 1 || trackDirectionId == 2) { // Horizontal
-        context.fillStyle = lineWhite;
-        context.fillRect(startX, startY + 75 * scaleFactor, gridCellSizeX, 350 * scaleFactor);
-        context.fillStyle = lineRed;
-        for(let x = 0; x < gridCellSizeX; x += 100 * scaleFactor) {
-            context.fillRect(startX + x, startY + 75 * scaleFactor, 50 * scaleFactor, 25 * scaleFactor);
-        }
-        context.fillStyle = tarmacGrey;
-        context.fillRect(startX, startY + 100 * scaleFactor, gridCellSizeX, 300 * scaleFactor);
+    let trackDirection = getTrackDirection(trackSegmentId);
+    if(trackDirection == "h") {
+        context.drawImage(straightTrackImg, startX, startY, gridCellSizeX, gridCellSizeY);
     }
-    else if(trackDirectionId == 3 || trackDirectionId == 4) { // Vertical
-        context.fillStyle = lineWhite;
-        context.fillRect(startX + 75 * scaleFactor, startY, 350 * scaleFactor, gridCellSizeY);
-        context.fillStyle = lineRed;
-        for(let y = 0; y < gridCellSizeY; y += 100 * scaleFactor) {
-            context.fillRect(startX + 75 * scaleFactor, startY + y, 25 * scaleFactor, 50 * scaleFactor);
-        }
-        context.fillStyle = tarmacGrey;
-        context.fillRect(startX + 100 * scaleFactor, startY, 300 * scaleFactor, gridCellSizeY);
+    else if(trackDirection == "v") {
+        context.drawImage(straightTrackImg, startX, startY, gridCellSizeX, gridCellSizeY);
     }
     else {
-        context.fillStyle = lineWhite;
-        context.fillRect(startX + 100 * scaleFactor, startY + 100 * scaleFactor, 300 * scaleFactor, 300 * scaleFactor);
+        context.drawImage(curvedTrackImg, startX, startY, gridCellSizeX, gridCellSizeY);
     }
 }
 
