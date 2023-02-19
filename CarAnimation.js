@@ -220,6 +220,8 @@ function drawTrackTile(row, col) {
     let startY = row * gridCellSizeY;
     let scaleFactor = gridCellSizeX / 500;
 
+    context.strokeStyle = "";
+
     context.fillStyle = grassGreen;
     context.fillRect(startX, startY, gridCellSizeX, gridCellSizeY);
 
@@ -236,6 +238,8 @@ function drawTrackTile(row, col) {
         for(let x = 0; x < gridCellSizeX; x += 100 * scaleFactor) {
             context.fillRect(startX + x, startY + 65 * scaleFactor, 50 * scaleFactor, 25 * scaleFactor);
         }
+        context.fillStyle = tarmacGrey;
+        context.fillRect(startX, startY + 100 * scaleFactor, gridCellSizeX, 300 * scaleFactor);
     }
     else if(trackDirectionId == 3 || trackDirectionId == 4) { // Vertical
         context.fillStyle = lineWhite;
@@ -244,6 +248,8 @@ function drawTrackTile(row, col) {
         for(let y = 0; y < gridCellSizeY; y += 100 * scaleFactor) {
             context.fillRect(startX + 65 * scaleFactor, startY + y, 25 * scaleFactor, 50 * scaleFactor);
         }
+        context.fillStyle = tarmacGrey;
+        context.fillRect(startX + 100 * scaleFactor, startY, 300 * scaleFactor, gridCellSizeY);
     }
     else {
         context.fillStyle = lineWhite;
