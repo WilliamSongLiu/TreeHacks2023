@@ -231,17 +231,17 @@ function drawTrackTile(row, col) {
     let trackDirectionId = getTrackDirectionId(trackSegmentId);
     if(trackDirectionId == 1 || trackDirectionId == 2) { // Horizontal
         context.fillStyle = lineWhite;
-        context.fillRect(startX, startY + 100 * scaleFactor, gridCellSizeX, 300 * scaleFactor);
+        context.fillRect(startX, startY + 65 * scaleFactor, gridCellSizeX, 345 * scaleFactor);
         context.fillStyle = lineRed;
-        for(let x = 0; x < gridCellSizeX; x += 50 * scaleFactor) {
+        for(let x = 0; x < gridCellSizeX; x += 100 * scaleFactor) {
             context.fillRect(startX + x, startY + 65 * scaleFactor, 50 * scaleFactor, 25 * scaleFactor);
         }
     }
     else if(trackDirectionId == 3 || trackDirectionId == 4) { // Vertical
         context.fillStyle = lineWhite;
-        context.fillRect(startX + 100 * scaleFactor, startY, 300 * scaleFactor, gridCellSizeY);
+        context.fillRect(startX + 65 * scaleFactor, startY, 345 * scaleFactor, gridCellSizeY);
         context.fillStyle = lineRed;
-        for(let y = 0; y < gridCellSizeY; y += 50 * scaleFactor) {
+        for(let y = 0; y < gridCellSizeY; y += 100 * scaleFactor) {
             context.fillRect(startX + 65 * scaleFactor, startY + y, 25 * scaleFactor, 50 * scaleFactor);
         }
     }
