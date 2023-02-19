@@ -25,7 +25,7 @@ let gridCellSizeX, gridCellSizeY;
 let trackOrder;
 
 let currentTrackOrderId = 0;
-let currentTrackSegmentProgress = 0;
+let currentTrackSegmentProgress = 0.5;
 
 let currentTrackSegmentLength;
 let distanceToNextCurve;
@@ -33,7 +33,7 @@ let distanceToNextCurve;
 let lastLapTime = null;
 
 let straightTopSpeed = 15;
-let curveTopSpeed = 5;
+let curveTopSpeed = 3;
 let acceleration = 3;
 let braking = 10;
 
@@ -301,6 +301,15 @@ function getCarPosition() {
     let [prevGridRow, prevGridCol] = getGridIdToRowCol(trackOrder[(currentTrackOrderId + trackOrder.length - 1) % trackOrder.length]);
     let [gridRow, gridCol] = getGridIdToRowCol(trackOrder[currentTrackOrderId]);
     let [nextGridRow, nextGridCol] = getGridIdToRowCol(trackOrder[(currentTrackOrderId + 1) % trackOrder.length]);
+
+    if(currentTrackOrderId == 0) {
+        prevGridRow = gridRow - 1;
+        prevGridCol = gridCol;
+    }
+    else if(currentTrackOrderId == trackOrder.length - 1) {
+        nextGridRow = gridRow + 1;
+        nextGridCol = gridCol;
+    }
 
     let gridLeastX = gridCol * gridCellSizeX;
     let gridLeastY = gridRow * gridCellSizeY;
