@@ -125,6 +125,26 @@ function getTrackIsCurve(trackSegmentId) {
     return true;
 }
 
+function getTrackDirectionId(trackSegmentId) {
+    let [prevGridRow, prevGridCol] = getGridIdToRowCol(trackOrder[(trackSegmentId + trackOrder.length - 1) % trackOrder.length]);
+    let [gridRow, gridCol] = getGridIdToRowCol(trackOrder[trackSegmentId]);
+    let [nextGridRow, nextGridCol] = getGridIdToRowCol(trackOrder[(trackSegmentId + 1) % trackOrder.length]);
+
+    if(!getTrackIsCurve(trackSegmentId)) { // Straight
+        if(gridRow == nextGridRow) { // Horizontal
+            if(nextGridCol > gridCol) return 1; // Horizontal right
+            else return 2; // Horizontal left
+        }
+        else { // Vertical
+            if(nextGridRow > gridRow) return 3; // Vertical down
+            else return 4; // Vertical up
+        }
+    }
+    else {
+        return 5;
+    }
+}
+
 function getTrackSegmentInfo() {
     if(getTrackIsCurve(currentTrackSegmentId)) {
         currentTrackSegmentLength = 100;
@@ -144,17 +164,19 @@ function getTrackSegmentInfo() {
 }
 
 function runPhysics() {
+    getTrackSegmentInfo();
+
     let brake = false;
     if(speed < curveTopSpeed) brake = false;
-    else if((curveTopSpeed - speed) / braking < 0) brake = false;
-    else if(curveTopSpeed <= Math.sqrt(Math.pow(speed, 2) + 2 * braking * distanceToNextCurve)) brake = true;
+    else if((speed - curveTopSpeed) / braking < 0) brake = true;
+    else if((curveTopSpeed) <= (Math.sqrt((Math.pow(speed, 2)) + (2 * braking * distanceToNextCurve)))) brake = true;
     else brake = false;
 
     if(brake) {
-        speed -= braking / fps;
+        speed -= braking * time;
     }
     else if((distanceToNextCurve == 0 && speed < curveTopSpeed) || (distanceToNextCurve > 0 && speed < straightTopSpeed)) {
-        speed += acceleration / fps;
+        speed += acceleration * time;
     }
 
     currentTrackSegmentProgress += speed / currentTrackSegmentLength;
@@ -167,8 +189,6 @@ function runPhysics() {
             lastLapTime = time;
             time = 0;
         }
-
-        getTrackSegmentInfo();
     }
 }
 
@@ -186,10 +206,48 @@ function draw() {
 function drawTrack() {
     for(let row = 0; row < gridNumRows; row++) {
         for(let col = 0; col < gridNumCols; col++) {
-            const gridCell = trackOrder.includes(getGridRowColToId(row, col)) ? 1 : 0;
-            context.fillStyle = "rgb(" + gridCell * 100 + ", 100, 100)";
-            context.fillRect(col * gridCellSizeX, row * gridCellSizeY, gridCellSizeX, gridCellSizeY);
+            drawTrackTile(row, col);
         }
+    }
+}
+
+let grassGreen = "#39b54a";
+let lineWhite = "#fff";
+let lineRed = "#ed1c24";
+let tarmacGrey = "#808285";
+function drawTrackTile(row, col) {
+    let startX = col * gridCellSizeX;
+    let startY = row * gridCellSizeY;
+    let scaleFactor = gridCellSizeX / 500;
+
+    context.fillStyle = grassGreen;
+    context.fillRect(startX, startY, gridCellSizeX, gridCellSizeY);
+
+    let trackSegmentId = getGridRowColToId(row, col);
+    if(!trackOrder.includes(trackSegmentId)) {
+        return;
+    }
+
+    let trackDirectionId = getTrackDirectionId(trackSegmentId);
+    if(trackDirectionId == 1 || trackDirectionId == 2) { // Horizontal
+        context.fillStyle = lineWhite;
+        context.fillRect(startX, startY + 100 * scaleFactor, gridCellSizeX, 300 * scaleFactor);
+        context.fillStyle = lineRed;
+        for(let x = 0; x < gridCellSizeX; x += 50 * scaleFactor) {
+            context.fillRect(startX + x, startY + 65 * scaleFactor, 50 * scaleFactor, 25 * scaleFactor);
+        }
+    }
+    else if(trackDirectionId == 3 || trackDirectionId == 4) { // Vertical
+        context.fillStyle = lineWhite;
+        context.fillRect(startX + 100 * scaleFactor, startY, 300 * scaleFactor, gridCellSizeY);
+        context.fillStyle = lineRed;
+        for(let y = 0; y < gridCellSizeY; y += 50 * scaleFactor) {
+            context.fillRect(startX + 65 * scaleFactor, startY + y, 25 * scaleFactor, 50 * scaleFactor);
+        }
+    }
+    else {
+        context.fillStyle = lineWhite;
+        context.fillRect(startX + 100 * scaleFactor, startY + 100 * scaleFactor, 300 * scaleFactor, 300 * scaleFactor);
     }
 }
 
@@ -318,8 +376,8 @@ function getCarPosition() {
 
 function drawCar() {
     let [x, y] = getCarPosition();
-    context.fillStyle = "rgb(255, 255, 255)";
-    context.fillRect(x, y, 10, 10);
+    context.fillStyle = "#000";
+    context.fillRect(x - 5, y - 5, 10, 10);
 }
 
 function drawTimer() {
