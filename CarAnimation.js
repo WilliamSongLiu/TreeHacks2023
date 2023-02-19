@@ -4,7 +4,7 @@ let context;
 let fps = 60;
 let time = 0;
 
-let gridNumRows = 8, gridNumCols = 8;
+let gridNumRows = 4, gridNumCols = 4;
 let gridCellSizeX, gridCellSizeY;
 
 let trackOrder;
@@ -41,6 +41,8 @@ function startGame() {
 
     gridCellSizeX = canvas.width / gridNumCols;
     gridCellSizeY = canvas.height / gridNumRows;
+
+    context.strokeStyle = "rgba(0, 0, 0, 0)";
 
     generateTrack();
     getTrackSegmentInfo();
@@ -220,8 +222,6 @@ function drawTrackTile(row, col) {
     let startY = row * gridCellSizeY;
     let scaleFactor = gridCellSizeX / 500;
 
-    context.strokeStyle = "";
-
     context.fillStyle = grassGreen;
     context.fillRect(startX, startY, gridCellSizeX, gridCellSizeY);
 
@@ -233,20 +233,20 @@ function drawTrackTile(row, col) {
     let trackDirectionId = getTrackDirectionId(trackSegmentId);
     if(trackDirectionId == 1 || trackDirectionId == 2) { // Horizontal
         context.fillStyle = lineWhite;
-        context.fillRect(startX, startY + 65 * scaleFactor, gridCellSizeX, 345 * scaleFactor);
+        context.fillRect(startX, startY + 75 * scaleFactor, gridCellSizeX, 350 * scaleFactor);
         context.fillStyle = lineRed;
         for(let x = 0; x < gridCellSizeX; x += 100 * scaleFactor) {
-            context.fillRect(startX + x, startY + 65 * scaleFactor, 50 * scaleFactor, 25 * scaleFactor);
+            context.fillRect(startX + x, startY + 75 * scaleFactor, 50 * scaleFactor, 25 * scaleFactor);
         }
         context.fillStyle = tarmacGrey;
         context.fillRect(startX, startY + 100 * scaleFactor, gridCellSizeX, 300 * scaleFactor);
     }
     else if(trackDirectionId == 3 || trackDirectionId == 4) { // Vertical
         context.fillStyle = lineWhite;
-        context.fillRect(startX + 65 * scaleFactor, startY, 345 * scaleFactor, gridCellSizeY);
+        context.fillRect(startX + 75 * scaleFactor, startY, 350 * scaleFactor, gridCellSizeY);
         context.fillStyle = lineRed;
         for(let y = 0; y < gridCellSizeY; y += 100 * scaleFactor) {
-            context.fillRect(startX + 65 * scaleFactor, startY + y, 25 * scaleFactor, 50 * scaleFactor);
+            context.fillRect(startX + 75 * scaleFactor, startY + y, 25 * scaleFactor, 50 * scaleFactor);
         }
         context.fillStyle = tarmacGrey;
         context.fillRect(startX + 100 * scaleFactor, startY, 300 * scaleFactor, gridCellSizeY);
@@ -389,7 +389,6 @@ function drawCar() {
 function drawTimer() {
     context.font = "18px serif";
     context.textBaseline = "hanging";
-    context.fillStyle = "rgb(255,255,0)";
-    context.strokeStyle = "rgb(255,255,0)";
+    context.fillStyle = "rgb(255, 255, 0)";
     context.fillText("Time: " + time.toFixed(2) + "s" + (lastLapTime != null ? " | Last: " + lastLapTime.toFixed(2) + "s" : ""), 10, 20);
 }
