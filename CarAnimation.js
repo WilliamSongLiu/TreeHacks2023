@@ -12,6 +12,9 @@ carRightImg.src = svgDataType + "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTg
 let emptyTrackImg = new Image();
 emptyTrackImg.src = svgDataType + "PHN2ZyBkYXRhLW5hbWU9IkxheWVyIDEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjUwMCIgaGVpZ2h0PSI1MDAiIHZpZXdCb3g9IjAgMCA1MDAgNTAwIj48cGF0aCBzdHlsZT0iZmlsbDojMzliNTRhIiBkPSJNLjIgMGg1MDB2NTAwSC4yeiIvPjwvc3ZnPg==";
 
+let bush1Img = new Image();
+bush1Img.src = svgDataType + "PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI1MDAiIGhlaWdodD0iNTAwIiB2aWV3Qm94PSIwIDAgNTAwIDUwMCI+PHBhdGggc3R5bGU9ImZpbGw6IzM5YjU0YSIgZD0iTS0uNC0uNGg1MDB2NTAwSC0uNHoiLz48cGF0aCBkPSJNMTg4LjEgMjE3LjZjMjEuOC0yOC4xIDY4LTguNSA3Ny4xIDIyLjIgMTAuOC0xLjIgMjQuMy0yLjkgMzUuNiAzLjEgMzEuNCAxNC45IDE4LjIgMzIuOCA1NS43IDU4LjIgNyA4LjEgMy4xIDE4LjMgMCAyNi4xIDExIDcuMyAxOC4zIDI3LjcgMy45IDM1LjMgMTguOCAyNy43LTEwLjkgMjcuOS0zIDQ5LjEuNyAxMC44LTEwIDI0LjEtMjEuNCAxOC42LTYuOCA2LjEtMjIuMSAxMS41LTI1LjctMi43LTEzLjMgOC4zLTI5LjIgMS0zNy0xMS4zaC0uNGMtNS40IDI2LjEtMjguNSAzNy42LTQyIDkuNC0yMS44IDE4LjMtMzkuNyAxMS4xLTQ1LjctMTYuMS00NC4zIDQwLjUtNzguMi0zLjMtOTctMzMuMy0xOC43IDUuMi0zNC0xMC41LTM3LTI3LjgtMi41LTEzLjkgNC4yLTI3LjIgMTIuOC0zNy43LTEyLjctMjMuNi0xMy44LTY2LjMgMjUuOS02Ni4zLTEuNi00LjktMS4xLTkuNyA0LjktMTAuNC0xMi4xLTM0LjggNjAuNi02MS42IDYyLjktMTguMSAxMC40LTIuOSAyMC41LTEuNCAzMC4yIDJ2LS4zWk01Mi45IDM0Mi43Yy44IDIwLjIgMTggMzguMiAzOC44IDMwLjEgMTIgNDQuOCA3Ny45IDc1LjUgMTAyLjYgMTcuNCAxLjUtMi40LjMtMTAgNC43LTguMSAyOCAxOS4yIDUwLjItNC42IDU1LjMtMzEuMiA1LjItMS45IDEyLjMtNCAxMS0xMSAuMi0xMy4yLTEzLjctMjEuMS0xNy43LTMwIDE4LjUtMjYuOS0xNS01NS0zNy44LTU5LjEgNS40LTI0LjktMzEtNDAtNTEuMy0zMy42LTMuOS0zNi44LTcwLjktMjQuOC02MS41IDE2LjMtMTIuNCA1LjgtLjUgOS43LTYuNCAxMi41LTMxLjItMi41LTQ0LjggMzgtMjQgNTguNyA1LjQgNC40LTE1IDE2LjktMTQgMzcuOGwuMy4yWm0xNTkuMi05MS44YzU5LjkgMTIuMSAyNy40IDQ5LjggNTMuMSA4MC44IDQuOSAxMC44IDEuOSAxOC05LjcgMjEtMy45IDI4LjItMjkuNiA1MC4yLTU3LjMgMzEuMy0yMC40IDI5LjMtMi4zIDY4LjggMzIuNCAzOS41IDEzLjYgMjQuOCAzNC4yIDIwLjQgNDItMTEuMSA4IDEyLjggMjQuNSAyMy45IDM4LjcgMTIgLjYgMTAuOSAxNS4xIDE0LjggMjAuOSA1LjQgNC4xLTUuOCAxMC43IDcuNiAyMC43LTguMSA3LjgtOC00LjgtMjAuNCAxLjEtMjUuNSAyMi4yLTcuNi0uMy0yOS45IDcuNi0zNyAxMC4xLTcuNiAyLjQtMjQuMS02LjItMjkuOC01LjEtMi40IDUuNy0xMS45IDIuOS0xOC4yLTMuMi0xNC0xNy43LTIxLjUtMjkuMS0yOC4yLTUuNy0yNi43LTMyLjYtNTAtNjEuOC0zOS45LTE0LjgtMjMuOC01MC4xLTU0LjEtNzguMS0yNC4yIDExLjkgNi4xIDI3IDE3LjQgMjIuNyAzMi42di0uNmguMVoiLz48cGF0aCBkPSJNNTIuOCAzNDIuNmMxOC45LTYwLjkgMTYuMy0xMS41IDMuOC02NS45IDEuNS0xNy4xIDE2LjQtMzIuNSAzNC4yLTMwLjYgNS41IDAtNC41LTkuMiAzLjktMTAuNyAxIDAgMy43LS4yIDIuNS0xLjgtMTMuOS0zMi40IDU3LjEtNTkuMyA1OC45LTE4IDE3LjUtLjggNjAuNSA2IDUzLjkgMzUuMyAyMi44IDQuMSA1Ni40IDMyLjIgMzcuOCA1OS4xLTIuNiA0IDEwLjkgNy4yIDE1LjQgMjEuNyA4LjUgMjAuOS03LjcgMTQuNC0xMC42IDIxLjgtMS41IDI3LjItMjguOCA0Ni01Mi45IDI5LTQuNy0zLjEtMy44IDUuMy01LjIgNy44LTI0LjcgNTcuOC05MC42IDI3LjYtMTAyLjYtMTcuNC0yMC44IDguMS0zOC4xLTEwLTM4LjgtMzAuMWwtLjMtLjJaIiBzdHlsZT0iZmlsbDojYjBkMjM1Ii8+PHBhdGggZD0iTTIxMiAyNTAuOGM0LjItMTUuMi0xMC44LTI2LjYtMjIuNy0zMi42IDI4LjMtMjkuNyA2My4yLjMgNzguMSAyNC4yIDI5LjMtMTAgNTYuMSAxMy4xIDYxLjggMzkuOSAxMS41IDYuNiAyNS45IDE0LjMgMjkuMSAyOC4yIDIuOSA2LjMtOC4xIDE2LTIuOSAxOC4yIDguNiA1LjggMTYuMyAyMi4yIDYuMiAyOS44LTcuOCA3LjIgMTQuNSAyOS41LTcuNiAzNy01LjkgNS4xIDYuNyAxNy41LTEuMSAyNS41LTkuOSAxNS42LTE2LjQgMi40LTIwLjcgOC4xLTUuOCA5LjMtMjAuMyA1LjYtMjAuOS01LjQtMTQuMiAxMS45LTMwLjYuOS0zOC43LTEyLTcuNyAzMS44LTI4LjYgMzUuNy00MiAxMS4xLTM0LjcgMjkuMy01Mi44LTEwLjMtMzIuNC0zOS41IDI1LjQgMTcuNiA1NC4xLS42IDU2LjEtMjkuNyA5LjEtNC44IDE3LjctMTAuNyAxMC45LTIyLjYtMS44LTkuMy0xMi0xNS4yLTE1LjMtMjEuNiAxNi42LTI0LjgtMTEuNy01OC0zNy44LTU5LjJ2LjZoLS4xWiIgc3R5bGU9ImZpbGw6IzMyNzk0NSIvPjwvc3ZnPg==";
+
 let straightTrackHorizontalImg = new Image();
 straightTrackHorizontalImg.src = svgDataType + "PHN2ZyBkYXRhLW5hbWU9IkxheWVyIDEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjUwMCIgaGVpZ2h0PSI1MDAiIHZpZXdCb3g9IjAgMCA1MDAgNTAwIj48cGF0aCBzdHlsZT0iZmlsbDojMzliNTRhIiBkPSJNMCAwaDUwMHY1MDBIMHoiLz48cGF0aCBzdHlsZT0iZmlsbDojZmZmIiBkPSJNMCA3NWg1MDB2MzUwSDB6Ii8+PHBhdGggc3R5bGU9ImZpbGw6IzgwODI4NSIgZD0iTTAgMTAwaDUwMHYzMDBIMHoiLz48L3N2Zz4=";
 
@@ -36,7 +39,7 @@ let time = 0;
 
 let gridNumRows = 4, gridNumCols = 4;
 let gridCellSizeX, gridCellSizeY;
-let carSizeX = 40, carSizeY = 40;
+let carSizeX = 50, carSizeY = 50;
 
 let trackOrder;
 let trackIsLoop;
@@ -248,7 +251,7 @@ function getTrackSegmentInfo() {
         currentTrackSegmentLength = 100;
     }
     else {
-        currentTrackSegmentLength = 2 * Math.PI * 50;
+        currentTrackSegmentLength = 2 * Math.PI * 50 / 4;
     }
 
     let trackSegmentId = currentTrackOrderId;
@@ -265,8 +268,9 @@ function runPhysics() {
     getTrackSegmentInfo();
 
     let brake = false;
-    if(speed < curveTopSpeed) brake = false;
-    else if((speed - curveTopSpeed) / braking >= 0) brake = true;
+    if(speed <= curveTopSpeed) brake = false;
+    else if (speed > curveTopSpeed) brake = true;
+    // else if((speed - curveTopSpeed) / braking >= 0) brake = true;
     else if(curveTopSpeed <= Math.sqrt(Math.pow(speed, 2) + 2 * braking * distanceToNextCurve)) brake = true;
     else brake = false;
 
@@ -315,7 +319,12 @@ function drawTrackTile(row, col) {
 
     let trackSegmentId = getGridRowColToId(row, col);
     if(!trackOrder.includes(trackSegmentId)) {
-        context.drawImage(emptyTrackImg, startX, startY, gridCellSizeX, gridCellSizeY);
+        if(Math.random() < 0.1) {
+            context.drawImage(bush1Img, startX, startY, gridCellSizeX, gridCellSizeY);
+        }
+        else {
+            context.drawImage(emptyTrackImg, startX, startY, gridCellSizeX, gridCellSizeY);
+        }
         return;
     }
     let trackOrderId = trackOrder.indexOf(trackSegmentId);
@@ -498,5 +507,5 @@ function drawTimer() {
     context.font = "18px serif";
     context.textBaseline = "hanging";
     context.fillStyle = "rgb(255, 255, 0)";
-    context.fillText("Time: " + time.toFixed(2) + "s" + (lastLapTime != null ? " | Last: " + lastLapTime.toFixed(2) + "s" : ""), 10, 20);
+    context.fillText("Time: " + time.toFixed(2) + "s" + (lastLapTime != null ? " | Last: " + lastLapTime.toFixed(2) + "s" : ""), 30, 30);
 }
