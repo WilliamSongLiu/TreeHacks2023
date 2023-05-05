@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>2D Top-Down Racing Game</title>
+    <style>
+    canvas {
+        display: block;
+        margin: 0 auto;
+        background-color: #222;
+    }
+    </style>
+</head>
+<body>
+    <canvas id="canvas" width="800" height="800"></canvas>
+    <script>
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+
+    const cellSize = 100;
+
+    // Car properties
+    const car = {
+        x: 50,
+        y: 50,
+        angle: 0,
+        speed: 0,
+        acceleration: 200,
+        naturalDeceleration: 100,
+        deceleration: 300,
+        maxSpeed: 300,
+        turnSpeed: 2.5,
+    };
+
+    // Grid and race track
+    const grid = generateTrack(8, 8);
+
+    function generateTrack(rows, cols) {
+        const track = new Array(rows);
+        for (let i = 0; i < rows; i++) {
+            track[i] = new Array(cols).fill('grass');
+        }
+
+        // Top horizontal section
+        for (let col = 1; col < cols - 1; col++) {
+            track[0][col] = 'straightH';
+        }
+
+        // Bottom horizontal section
+        for (let col = 1; col < cols - 1; col++) {
+            track[rows - 1][col] = 'straightH';
+        }
+
+        // Left vertical section
+        for (let row = 1; row < rows - 1; row++) {
+            track[row][0] = 'straightV';
+        }
+
+        // Right vertical section
+        for (let row = 1; row < rows - 1; row++) {
+            track[row][cols - 1] = 'straightV';
+        }
+
+        // Rounded corners
+        track[0][0] = 'curveTL';
+        track[0][cols - 1] = 'curveTR';
+        track[rows - 1][0] = 'curveBL';
+        track[rows - 1][cols - 1] = 'curveBR';
+
+        return track;
+    }
+
+    // Game state
+    let gameState = 'running';
+    let startTime = 0;
+    let lapStartTime = 0;
+    let lapEndTime = 0;
+
+    function gameLoop(timestamp) {
+        const deltaTime = (timestamp - startTime) / 1000;
+        startTime = timestamp;
+
+        // Clear canvas
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        if (gameState === 'running') {
+            // Update car position
+            updateCar(deltaTime);
+
+            // Draw lap time
+            drawLapTime();
+        }
+
+        // Draw race track
+        drawTrack();
+
+        // Draw car
+        drawCar();
+
+        // Next frame
+        requestAnimationFrame(gameLoop);
+    }
+
+    function updateCar(deltaTime) {
+        // Acceleration
+        if (keyState.ArrowUp) {
+            car.speed += car.acceleration * deltaTime;
+            if (car.speed > car.maxSpeed) {
+                car.speed = car.maxSpeed;
+            }
+        } else {
+            car.speed -= car.naturalDeceleration * deltaTime;
+            if (car.speed < 0) {
+                car.speed = 0;
+            }
+        }
+
+        // Deceleration
+        if (keyState.ArrowDown) {
+            car.speed -= car.deceleration * deltaTime;
+            if (car.speed < -car.maxSpeed / 2) {
+                car.speed = -car.maxSpeed / 2;
+            }
+        }
+
+        // Turning
+        if (car.speed > 0) {
+            if (keyState.ArrowLeft) {
+                car.angle -= car.turnSpeed * deltaTime;
+            }
+            if (keyState.ArrowRight) {
+                car.angle += car.turnSpeed * deltaTime;
+            }
+        }
+
+        // Update position
+        car.x += Math.cos(car.angle) * car.speed * deltaTime;
+        car.y += Math.sin(car.angle) * car.speed * deltaTime;
+    }
+
+    function drawTrack() {
+        for (let row = 0; row < grid.length; row++) {
+            for (let col = 0; col < grid[row].length; col++) {
+                const x = col * cellSize;
+                const y = row * cellSize;
+
+                ctx.fillStyle = 'green';
+                ctx.fillRect(x, y, cellSize, cellSize);
+
+                if (grid[row][col] === 'straightH' || grid[row][col] === 'straightV') {
+                    ctx.fillStyle = 'gray';
+                    ctx.fillRect(x, y, cellSize, cellSize);
+                } else if (['curveTL', 'curveTR', 'curveBL', 'curveBR'].includes(grid[row][col])) {
+                    ctx.fillStyle = 'gray';
+                    ctx.fillRect(x, y, cellSize, cellSize);
+
+                    ctx.fillStyle = 'green';
+                    ctx.beginPath();
+                    if (grid[row][col] === 'curveTL') {
+                        ctx.arc(x + cellSize, y + cellSize, cellSize, Math.PI, 1.5 * Math.PI);
+                    } else if (grid[row][col] === 'curveTR') {
+                        ctx.arc(x, y + cellSize, cellSize, 1.5 * Math.PI, 0);
+                    } else if (grid[row][col] === 'curveBL') {
+                        ctx.arc(x + cellSize, y, cellSize, Math.PI, 0.5 * Math.PI);
+                    } else if (grid[row][col] === 'curveBR') {
+                        ctx.arc(x, y, cellSize, 0.5 * Math.PI, Math.PI);
+                    }
+                    ctx.lineTo(x + cellSize, y + cellSize);
+                    ctx.closePath();
+                    ctx.fill();
+                }
+            }
+        }
+    }
+
+    function drawCar() {
+        ctx.save();
+        ctx.translate(car.x, car.y);
+        ctx.rotate(car.angle);
+        ctx.fillStyle = 'blue';
+        ctx.fillRect(-10, -15, 20, 30);
+        ctx.restore();
+    }
+
+    function drawLapTime() {
+        ctx.font = '24px Arial';
+        ctx.fillStyle = 'white';
+        ctx.fillText('Lap Time: ' + lapEndTime.toFixed(2) + 's', 10, 30);
+    }
+
+    // Key state handling
+    const keyState = {};
+    window.addEventListener('keydown', (event) => {
+        keyState[event.key] = true;
+    });
+
+    window.addEventListener('keyup', (event) => {
+        keyState[event.key] = false;
+    });
+
+    // Start game loop
+    requestAnimationFrame(gameLoop);
+</script>
+</body>
+</html>

@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>2D Top-Down Racing Game</title>
+    <style>
+    canvas {
+        display: block;
+        margin: 0 auto;
+        background-color: #222;
+    }
+    </style>
+</head>
+<body>
+    <canvas id="canvas" width="800" height="800"></canvas>
+    <script>
+    const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+
+const cellSize = 100;
+const grid = generateTrack(8, 8);
+
+const car = {
+    x: cellSize * 2.5,
+    y: cellSize * 1.5,
+    angle: 0,
+    speed: 0,
+    maxSpeed: 250,
+    acceleration: 120,
+    deceleration: 150,
+    turnSpeed: 3,
+};
+
+let lapStartTime = 0;
+let lapEndTime = 0;
+let lapActive = false;
+
+function gameLoop(timestamp) {
+    const deltaTime = (timestamp - (lastTimestamp || timestamp)) / 1000;
+    lastTimestamp = timestamp;
+
+    updateCar(deltaTime);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    drawTrack();
+    drawCar();
+    drawLapTime();
+
+    requestAnimationFrame(gameLoop);
+}
+
+function generateTrack(rows, cols) {
+    const track = new Array(rows);
+    for (let i = 0; i < rows; i++) {
+        track[i] = new Array(cols).fill('grass');
+    }
+
+    // Create a centered 6x6 square track
+    for (let row = 1; row < rows - 1; row++) {
+        for (let col = 1; col < cols - 1; col++) {
+            if (row === 1 || row === rows - 2) {
+                track[row][col] = 'straightH';
+            } else if (col === 1 || col === cols - 2) {
+                track[row][col] = 'straightV';
+            } else if (row === 2 && col === 2) {
+                track[row][col] = 'curveTL';
+            } else if (row === 2 && col === cols - 3) {
+                track[row][col] = 'curveTR';
+            } else if (row === rows - 3 && col === 2) {
+                track[row][col] = 'curveBL';
+            } else if (row === rows - 3 && col === cols - 3) {
+                track[row][col] = 'curveBR';
+            }
+        }
+    }
+
+    return track;
+}
+
+function updateCar(deltaTime) {
+    // Acceleration
+    if (keyState.ArrowUp) {
+        car.speed += car.acceleration * deltaTime;
+        if (car.speed > car.maxSpeed) {
+            car.speed = car.maxSpeed;
+        }
+    }
+
+    // Deceleration
+    if (!keyState.ArrowUp || car.speed > 0) {
+        car.speed -= car.deceleration * deltaTime;
+        if (car.speed < 0) {
+            car.speed = 0;
+        }
+    }
+
+    // Turning
+    if (car.speed > 0) {
+        const turnSpeed = car.turnSpeed * (car.speed / car.maxSpeed);
+        if (keyState.ArrowLeft) {
+            car.angle -= turnSpeed * deltaTime;
+        }
+        if (keyState.ArrowRight) {
+            car.angle += turnSpeed * deltaTime;
+        }
+    }
+
+    // Update position
+    car.x += Math.cos(car.angle) * car.speed * deltaTime;
+    car.y += Math.sin(car.angle) * car.speed * deltaTime;
+
+    // Boundary collision detection
+    if (car.x < 0 || car.x > canvas.width || car.y < 0 || car.y > canvas.height) {
+        gameOver();
+    }
+
+    // Check if the car enters the start/finish tile
+    const carTile = {
+        row: Math.floor(car.y / cellSize),
+        col: Math.floor(car.x / cellSize),
+    };
+
+    if (carTile.row === startFinishTile.row && carTile.col === startFinishTile.col) {
+        if (!lapActive) {
+            lapStartTime = performance.now();
+            lapActive = true;
+        } else {
+            lapEndTime = (performance.now() - lapStartTime) / 1000;
+            lapActive = false;
+        }
+    }
+}
+
+function drawTrack() {
+    for (let row = 0; row < grid.length; row++) {
+        for (let col = 0; col < grid[row].length; col++) {
+            const x = col * cellSize;
+            const y = row * cellSize;
+
+            ctx.fillStyle = 'green';
+            ctx.fillRect(x, y, cellSize, cellSize);
+
+            if (grid[row][col] === 'straightH' || grid[row][col] === 'straightV') {
+                ctx.fillStyle = 'gray';
+                ctx.fillRect(x, y, cellSize, cellSize);
+            } else if (['curveTL', 'curveTR', 'curveBL', 'curveBR'].includes(grid[row][col])) {
+                ctx.fillStyle = 'gray';
+                ctx.beginPath();
+                ctx.arc(x + cellSize, y + cellSize, cellSize, 0, 2 * Math.PI);
+
+                if (grid[row][col] === 'curveTL') {
+                    ctx.arc(x + cellSize, y + cellSize, cellSize / 2, Math.PI, 1.5 * Math.PI);
+                } else if (grid[row][col] === 'curveTR') {
+                    ctx.arc(x, y + cellSize, cellSize / 2, 1.5 * Math.PI, 0);
+                } else if (grid[row][col] === 'curveBL') {
+                    ctx.arc(x + cellSize, y, cellSize / 2, Math.PI, 0.5 * Math.PI);
+                } else if (grid[row][col] === 'curveBR') {
+                    ctx.arc(x, y, cellSize / 2, 0.5 * Math.PI, Math.PI);
+                }
+                ctx.fill();
+            }
+
+            // Draw start/finish line
+            if (row === startFinishTile.row && col === startFinishTile.col) {
+                ctx.fillStyle = 'red';
+                ctx.fillRect(x, y, cellSize / 2, 10);
+            }
+        }
+    }
+}
+
+function drawCar() {
+    ctx.save();
+    ctx.translate(car.x, car.y);
+    ctx.rotate(car.angle);
+    ctx.fillStyle = 'blue';
+    ctx.fillRect(-10, -20, 20, 40);
+    ctx.restore();
+}
+
+function drawLapTime() {
+    ctx.fillStyle = 'black';
+    ctx.font = '20px sans-serif';
+    ctx.fillText(`Lap Time: ${lapEndTime.toFixed(2)} seconds`, 10, 30);
+}
+
+function gameOver() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = 'black';
+    ctx.font = '48px sans-serif';
+    ctx.fillText('Game Over', canvas.width / 2 - 100, canvas.height / 2);
+    ctx.font = '24px sans-serif';
+    ctx.fillText('Press F5 to Restart', canvas.width / 2 - 80, canvas.height / 2 + 40);
+}
+
+const keyState = {};
+
+document.addEventListener('keydown', (event) => {
+    keyState[event.key] = true;
+});
+
+document.addEventListener('keyup', (event) => {
+    keyState[event.key] = false;
+});
+
+const startFinishTile = {
+    row: 1,
+    col: 1,
+};
+
+let lastTimestamp;
+requestAnimationFrame(gameLoop);
+    </script>
+</body>
+</html>
