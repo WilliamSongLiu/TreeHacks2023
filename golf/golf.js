@@ -15,7 +15,8 @@ const ball = {
     y: canvas.height / 2,
     radius: 10,
     dx: 0,
-    dy: 0
+    dy: 0,
+    lastCollidedObject: null
 };
 
 const objects = [
@@ -82,10 +83,13 @@ function drawObjects() {
 
 
 function updateBall() {
-    detectCollision();
+    const numSteps = 10;
+    for (let i = 0; i < numSteps; i++) {
+        ball.x += ball.dx / numSteps;
+        ball.y += ball.dy / numSteps;
 
-    ball.x += ball.dx;
-    ball.y += ball.dy;
+        detectCollision();
+    }
 
     ball.dx *= friction;
     ball.dy *= friction;
@@ -94,7 +98,10 @@ function updateBall() {
         ball.dx = 0;
         ball.dy = 0;
     }
+
+    ball.lastCollidedObject = null;
 }
+
 
 function getMousePos(canvas, event) {
     const rect = canvas.getBoundingClientRect();
@@ -146,6 +153,10 @@ function getRotatedRectVertices(object) {
 
 function detectCollision() {
     objects.forEach((object) => {
+        if (object === ball.lastCollidedObject) {
+            return;
+        }
+
         const vertices = getRotatedRectVertices(object);
         const ballCenter = { x: ball.x, y: ball.y };
 
@@ -183,6 +194,7 @@ function detectCollision() {
                 ball.x += (ball.radius + offset) * normalizedNormalX;
                 ball.y += (ball.radius + offset) * normalizedNormalY;
 
+                ball.lastCollidedObject = object;
                 break;
             }
         }
