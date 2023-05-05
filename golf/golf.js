@@ -11,8 +11,11 @@ const ball = {
 };
 
 let isMouseDown = false;
-let arrowStart = { x: 0, y: 0 };
-let arrowEnd = { x: 0, y: 0 };
+let dragStart = { x: 0, y: 0 };
+let dragEnd = { x: 0, y: 0 };
+const hitForce = 20;
+const cancelThreshold = 5;
+const velocityThreshold = 0.2;
 
 function drawBall() {
     ctx.beginPath();
@@ -22,13 +25,19 @@ function drawBall() {
     ctx.stroke();
 }
 
-function drawArrow() {
+function drawDrag() {
     if (isMouseDown) {
-        ctx.beginPath();
-        ctx.moveTo(arrowStart.x, arrowStart.y);
-        ctx.lineTo(arrowEnd.x, arrowEnd.y);
-        ctx.strokeStyle = 'black';
-        ctx.stroke();
+        const numDots = 10;
+        for (let i = 1; i <= numDots; i++) {
+            const t = i / (numDots + 1);
+            const x = ball.x + t * -(dragEnd.x - dragStart.x);
+            const y = ball.y + t * -(dragEnd.y - dragStart.y);
+
+            ctx.beginPath();
+            ctx.arc(x, y, 2, 0, 2 * Math.PI);
+            ctx.fillStyle = 'black';
+            ctx.fill();
+        }
     }
 }
 
@@ -39,8 +48,10 @@ function updateBall() {
     ball.dx *= ball.friction;
     ball.dy *= ball.friction;
 
-    if (Math.abs(ball.dx) < 0.01) ball.dx = 0;
-    if (Math.abs(ball.dy) < 0.01) ball.dy = 0;
+    if (Math.abs(ball.dx) < velocityThreshold && Math.abs(ball.dy) < velocityThreshold) {
+        ball.dx = 0;
+        ball.dy = 0;
+    }
 }
 
 function getMousePos(canvas, event) {
@@ -51,37 +62,65 @@ function getMousePos(canvas, event) {
     };
 }
 
+function isBallAtRest() {
+    return ball.dx === 0 && ball.dy === 0;
+}
+
+function drawRestIndicator() {
+    if (isBallAtRest()) {
+        ctx.beginPath();
+        ctx.arc(ball.x, ball.y, ball.radius + 5, 0, 2 * Math.PI);
+        ctx.strokeStyle = 'rgba(0, 0, 0, 0.2)';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+    }
+}
+
 canvas.addEventListener('mousedown', (event) => {
-    const mousePos = getMousePos(canvas, event);
-    isMouseDown = true;
-    arrowStart.x = mousePos.x;
-    arrowStart.y = mousePos.y;
-    arrowEnd.x = mousePos.x;
-    arrowEnd.y = mousePos.y;
+    if (isBallAtRest()) {
+        const mousePos = getMousePos(canvas, event);
+        isMouseDown = true;
+        dragStart.x = mousePos.x;
+        dragStart.y = mousePos.y;
+        dragEnd.x = mousePos.x;
+        dragEnd.y = mousePos.y;
+    }
 });
 
 canvas.addEventListener('mousemove', (event) => {
-    if (isMouseDown) {
+    if (isMouseDown && isBallAtRest()) {
         const mousePos = getMousePos(canvas, event);
-        arrowEnd.x = mousePos.x;
-        arrowEnd.y = mousePos.y;
+        dragEnd.x = mousePos.x;
+        dragEnd.y = mousePos.y;
     }
 });
 
 canvas.addEventListener('mouseup', () => {
-    isMouseDown = false;
-    const dx = (arrowStart.x - arrowEnd.x) / 10;
-    const dy = (arrowStart.y - arrowEnd.y) / 10;
+    if (isBallAtRest()) {
+        isMouseDown = false;
+        const dx = (dragStart.x - dragEnd.x) / hitForce;
+        const dy = (dragStart.y - dragEnd.y) / hitForce;
+        const distance = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
 
-    ball.dx += dx;
-    ball.dy += dy;
+        if (distance > cancelThreshold / hitForce) {
+            ball.dx += dx;
+            ball.dy += dy;
+        }
+    }
+});
+
+canvas.addEventListener('mouseout', () => {
+    isMouseDown = false;
+    dragStart = { x: 0, y: 0 };
+    dragEnd = { x: 0, y: 0 };
 });
 
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     drawBall();
-    drawArrow();
+    drawDrag();
+    drawRestIndicator();
 
     updateBall();
 
